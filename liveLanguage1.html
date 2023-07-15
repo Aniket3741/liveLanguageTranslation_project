@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Live Language Translation</title>
+    <script>
+        function startTranslation() {
+            // Check if the browser supports the SpeechRecognition API
+            if ('webkitSpeechRecognition' in window) {
+                var recognition = new webkitSpeechRecognition();
+
+                // Set the language for speech recognition
+                recognition.lang = 'en-US';
+
+                // Define the event handler for speech recognition results
+                recognition.onresult = function (event) {
+                    var transcript = event.results[0][0].transcript;
+
+                    // Call the translation function with the transcript
+                    translateText(transcript);
+                };
+
+                // Start speech recognition
+                recognition.start();
+            } else {
+                console.log('Speech recognition not supported');
+            }
+        }
+
+        function translateText(text) {
+            // Replace with your translation service API endpoint and credentials
+            var apiEndpoint = 'YOUR_TRANSLATION_API_ENDPOINT';
+            var apiKey = 'YOUR_TRANSLATION_API_KEY';
+
+            // Make an API request to translate the text
+            var request = new XMLHttpRequest();
+            request.open('POST', apiEndpoint, true);
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    var response = JSON.parse(request.responseText);
+                    var translatedText = response.translations[0].translatedText;
+
+                    // Display the translated text
+                    document.getElementById('translatedText').textContent = translatedText;
+                }
+            };
+
+            var data = {
+                q: text,
+                source: 'en',
+                target: 'fr' // Replace with your target language code
+            };
+
+            request.send(JSON.stringify(data));
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Live Language Translation</h1>
+    <button onclick="startTranslation()">Start Translation</button>
+    <p id="translatedText"></p>
+</body>
+
+</html>
